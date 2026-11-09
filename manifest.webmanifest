@@ -1,0 +1,17 @@
+{
+  "id": "/logic/",
+  "name": "Logic",
+  "short_name": "Logic",
+  "description": "A 6x6 picture logic puzzle",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E9EDF2",
+  "theme_color": "#0E7C74",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
