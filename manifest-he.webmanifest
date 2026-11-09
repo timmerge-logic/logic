@@ -1,0 +1,17 @@
+{
+  "id": "/logic/hebrew.html",
+  "name": "לוגיקה",
+  "short_name": "לוגיקה",
+  "description": "חידת היגיון בתמונות, 6 על 6",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "hebrew.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E9EDF2",
+  "theme_color": "#0E7C74",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
