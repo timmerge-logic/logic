@@ -396,6 +396,10 @@ const I18N={
   dlSignIn:'Downloading isn’t available here. To play or download the game, open this address in your browser: https://timmerge-logic.github.io/logic/',
   dlWait:'Opening the save prompt… Confirm it to save the file.', dlDeclined:'Download cancelled.',
   dlSaved:'Saved. Open the file to play.', dlFail:'Could not save the file. Please try again.',
+  pwaInstall:'Install the game', pwaNote:'Adds Logic to your device as an app. It works with no internet.',
+  pwaDone:'Installed. Look for Logic on your home screen or in your apps.',
+  pwaIOS:'On iPhone or iPad: open this page in Safari, tap the Share button, then “Add to Home Screen”.',
+  pwaMenu:'Open your browser’s menu (⋮) and choose “Install app” or “Add to Home screen”.',
   theme:'Dark / light mode', credits:'Created by <b>Yochai</b> and <b>Ge Timmer</b>',
   time:'Time', difficulty:'Difficulty', sound:'Sound', howTo:'How to play', tapModes:'What a tap does',
   solvedTitle:'Puzzle solved!', wellDone:'Well reasoned.', close:'Close', newPuzzle:'New puzzle', scores:'Scores',
@@ -457,6 +461,10 @@ const I18N={
   dlSignIn:'ההורדה לא זמינה כאן. כדי לשחק או להוריד את המשחק, פתחו בדפדפן את הכתובת: https://timmerge-logic.github.io/logic/hebrew.html',
   dlWait:'פותח את חלון השמירה… אשרו אותו כדי לשמור את הקובץ.', dlDeclined:'ההורדה בוטלה.',
   dlSaved:'נשמר. פתחו את הקובץ כדי לשחק.', dlFail:'לא ניתן לשמור את הקובץ. נסו שוב.',
+  pwaInstall:'התקנת המשחק', pwaNote:'מוסיף את המשחק למכשיר כאפליקציה. עובד גם בלי אינטרנט.',
+  pwaDone:'הותקן. חפשו את המשחק במסך הבית או ברשימת האפליקציות.',
+  pwaIOS:'באייפון או באייפד: פתחו את הדף ב־Safari, הקישו על כפתור השיתוף ואז על ״הוסף למסך הבית״.',
+  pwaMenu:'פתחו את תפריט הדפדפן (⋮) ובחרו ״התקנת אפליקציה״ או ״הוספה למסך הבית״.',
   theme:'מצב כהה / בהיר', credits:'נוצר על ידי <b>Yochai</b> ו־<b>Ge Timmer</b>',
   time:'זמן', difficulty:'רמת קושי', sound:'צליל', howTo:'איך משחקים', tapModes:'מה עושה הקשה',
   solvedTitle:'החידה נפתרה!', wellDone:'חשיבה מצוינת!', close:'סגור', newPuzzle:'חידה חדשה', scores:'ניקוד',
@@ -902,13 +910,34 @@ let dl=null;
    On any other website: plain browser download. In a saved copy opened from disk: hidden. */
 let dlMode='';
 $('dlTopBtn').onclick=()=>{
+  if(installEvt){$('dlBtn').click();return}
   $('helpBtn').click();setTimeout(()=>$('offlineBox').scrollIntoView({block:'center'}),50);
   if(dlMode==='save')$('dlBtn').click();
 };
 function offlineUI(mode){ // 'save' | 'signin'
-  dlMode=mode; $('dlTopBtn').hidden=false; $('dlTopBtn').title=T().dlOffline;
+  dlMode=mode; $('dlTopBtn').hidden=false; $('dlTopBtn').title=T()[$('dlTopBtn').dataset.tAria];
   $('offlineBox').hidden=false;
   $('dlBtn').hidden=mode!=='save'; $('dlNoteP').hidden=mode!=='save'; $('dlSignIn').hidden=mode!=='signin';
+}
+/* On our own website the game is an installable app (PWA). Added at run time, so downloaded copies and claude.ai stay as they are. */
+const onSite=location.hostname==='timmerge-logic.github.io';
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isAndroid=/Android/.test(navigator.userAgent);
+var installEvt=null;
+function pwaLabel(){
+  const set=(el,k)=>{el.dataset.t=k;el.textContent=T()[k]};
+  set($('dlBtn').querySelector('span'),'pwaInstall'); set($('dlNoteP'),'pwaNote');
+  const top=$('dlTopBtn');top.dataset.tAria='pwaInstall';top.setAttribute('aria-label',T().pwaInstall);top.title=T().pwaInstall;
+}
+if(onSite){
+  const m=document.createElement('link');m.rel='manifest';
+  m.href=/hebrew\.html$/.test(location.pathname)?'manifest-he.webmanifest':'manifest.webmanifest';
+  document.head.appendChild(m);
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;pwaLabel()});
+  addEventListener('appinstalled',()=>{installEvt=null;$('dlMsg').textContent=T().pwaDone});
+  if(isIOS||isAndroid)setTimeout(pwaLabel,0);
 }
 let isTop=false;try{isTop=window.top===window}catch(e){}
 let dlState='waiting';
@@ -925,12 +954,17 @@ const dlReady=!dlOnline?Promise.resolve(null):new Promise(res=>{
     if(++tries<40)setTimeout(look,250);
   })();
 });
-if(dlOnline){
+if(dlOnline&&!standalone){
   /* Show the button at once rather than waiting for the viewer's answer. */
   setTimeout(()=>offlineUI('save'),0);
   dlReady.then(d=>{if(!d&&!isTop&&dlState==='null')offlineUI('signin')});
 }
 $('dlBtn').onclick=async()=>{
+  if(onSite){
+    if(installEvt){const e=installEvt;installEvt=null;e.prompt();const c=await e.userChoice;$('dlMsg').textContent=c.outcome==='accepted'?T().pwaDone:'';return}
+    if(isIOS){$('dlMsg').textContent=T().pwaIOS;return}
+    if(isAndroid){$('dlMsg').textContent=T().pwaMenu;return}
+  }
   const html=PAGE_SRC.replace(/const DEFAULT_LANG='\w+'/,`const DEFAULT_LANG='${LANG}'`);
   const name=LANG==='he'?'Hebrew Logic.html':'Logic.html';
   $('dlMsg').textContent=T().dlWait;
