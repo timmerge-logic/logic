@@ -520,7 +520,7 @@ const I18N={
  }
 };
 let LANG=DEFAULT_LANG;
-try{const q=new URLSearchParams(location.search).get('lang');if(q&&I18N[q]){LANG=q;localStorage.setItem('eliminate:lang',q)}else{const s=localStorage.getItem('eliminate:lang');if(s&&I18N[s])LANG=s}}catch(e){}
+try{const q=new URLSearchParams(location.search).get('lang');if(q&&I18N[q]){LANG=q;localStorage.setItem('eliminate:lang',q)}else if(location.hostname!=='timmerge-logic.github.io'){/* on the website each page keeps its own language */const s=localStorage.getItem('eliminate:lang');if(s&&I18N[s])LANG=s}}catch(e){}
 const T=()=>I18N[LANG];
 const ICON=(r,i)=>`<svg class="ic" viewBox="0 0 32 32" aria-hidden="true">${ROWS[r].art[i]}</svg>`;
 const ARROWS='<svg viewBox="0 0 24 12" aria-hidden="true"><path d="M5 6h14" stroke="currentColor" stroke-width="2"/><path d="M0.5 6l6-4.5v9zM23.5 6l-6-4.5v9z" fill="currentColor"/></svg>';
