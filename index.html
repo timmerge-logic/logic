@@ -226,6 +226,7 @@ body.paused .board,body.paused .colnums,body.paused .side .well{filter:blur(9px)
       <div class="toolbar">
         <button class="b95" id="newBtn" type="button"><svg viewBox="0 0 16 16"><path d="M3 1.5h7l3 3v10H3z" fill="#fff" stroke="currentColor"/><path d="M10 1.5v3h3" fill="none" stroke="currentColor"/></svg><span data-t="new">New</span></button>
         <select class="b95" id="diff" data-t-aria="difficulty" aria-label="Difficulty">
+          <option value="super" data-t="lv_super">Super easy</option>
           <option value="easy" data-t="lv_easy">Easy</option>
           <option value="normal" data-t="lv_normal">Normal</option>
           <option value="hard" data-t="lv_hard">Hard</option>
@@ -390,6 +391,7 @@ const DEFAULT_LANG='en';
 const I18N={
  en:{
   title:'Logic', other:'עברית', otherAria:'Switch to Hebrew',
+  lv_super:'Super easy', superNo:'Not quite! That move would be a mistake, so it wasn’t made. Try another one.',
   new:'New', lv_easy:'Easy', lv_normal:'Normal', lv_hard:'Hard', undo:'Undo', hint:'Hint', check:'Check',
   ruleOut:'Rule out', place:'Place', vclues:'Vertical clues', hclues:'Horizontal clues',
   dlOffline:'Download to play offline', dlNote:'Saves the whole game as one file. Open it in any browser to play, with no install.',
@@ -455,6 +457,7 @@ const I18N={
  },
  he:{
   title:'לוגיקה', other:'English', otherAria:'Switch to English',
+  lv_super:'קל מאוד', superNo:'לא בדיוק! המהלך הזה היה טעות, אז הוא לא בוצע. נסו מהלך אחר.',
   new:'חדש', lv_easy:'קל', lv_normal:'רגיל', lv_hard:'קשה', undo:'בטל', hint:'רמז', check:'בדוק',
   ruleOut:'פסול', place:'הצב', vclues:'רמזים אנכיים', hclues:'רמזים אופקיים',
   dlOffline:'הורדה למשחק בלי אינטרנט', dlNote:'שומר את כל המשחק כקובץ אחד. פותחים אותו בכל דפדפן ומשחקים, בלי התקנה.',
@@ -531,6 +534,8 @@ const UNDER='<span class="under"><svg viewBox="0 0 100 7" preserveAspectRatio="n
 /* ---------- logic engine ---------- */
 const FULL = 63;
 const DIFF = {
+  /* super easy: many pictures already placed, plenty of spare clues, and wrong moves are stopped */
+  super:  {givens:9, triple:.5,  extra:6, w:{same:34,notsame:3, next:20,notnext:2, left:6, between:14,given:8}},
   easy:   {givens:4, triple:.35, extra:3, w:{same:30,notsame:6, next:18,notnext:5, left:10,between:14,given:6}},
   normal: {givens:2, triple:.2,  extra:1, w:{same:22,notsame:12,next:18,notnext:12,left:14,between:14,given:4}},
   hard:   {givens:0, triple:.1,  extra:0, w:{same:14,notsame:16,next:16,notnext:16,left:18,between:14,given:3}}
@@ -835,13 +840,22 @@ function after(){
   }
   save(); render();
 }
+/* Super easy: a move that would be wrong is not made; the cell flashes red instead. */
+function superStop(r,c){
+  if(S.diff!=='super') return false;
+  view.bad=new Set([r*6+c]); view.flash=null; render(); sfx.bad(); status(T().superNo);
+  setTimeout(()=>{if(view.bad&&view.bad.size===1&&view.bad.has(r*6+c)){view.bad=null;render()}},1400);
+  return true;
+}
 function eliminate(r,c,i){
   const m=S.cand[r][c]; if(S.won||!(m>>i&1)||bits(m)===1) return;
+  if(i===S.sol[r][c]&&superStop(r,c)) return;
   push(); S.cand[r][c]&=~(1<<i); rowLogic(S.cand); view.flash=null; view.hlClue=-1;
   status(T().ruledOut(inl([r,i]),c+1)); sfx.out(); after();
 }
 function place(r,c,i){
   const m=S.cand[r][c]; if(S.won||!(m>>i&1)||bits(m)===1) return;
+  if(i!==S.sol[r][c]&&superStop(r,c)) return;
   push(); S.cand[r][c]=1<<i; rowLogic(S.cand); view.flash=null; view.hlClue=-1;
   status(T().placed(inl([r,i]),c+1)); sfx.place(); after();
 }
