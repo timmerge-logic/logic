@@ -1,7 +1,7 @@
 // Logic: lets the installed app run with no internet.
 // Always tries the network first, so players get updates; the saved copy is used when offline.
-const CACHE = 'logic-v1';
-const FILES = ['./', 'index.html', 'hebrew.html', 'manifest.webmanifest', 'manifest-he.webmanifest', 'icon-192.png', 'icon-512.png'];
+const CACHE = 'logic-v2';
+const FILES = ['./', 'index.html', 'hebrew.html', 'dutch.html', 'manifest.webmanifest', 'manifest-he.webmanifest', 'manifest-nl.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
