@@ -392,7 +392,7 @@ const ROWS=[
 const DEFAULT_LANG='en';
 const I18N={
  en:{
-  title:'Logic', other:'עברית', otherAria:'Switch to Hebrew',
+  title:'Logic', self:'English', switchTo:x=>`Switch to ${x}`,
   lv_super:'Super easy', superNo:'Not quite! That move would be a mistake, so it wasn’t made. Try another one.',
   new:'New', lv_easy:'Easy', lv_normal:'Normal', lv_hard:'Hard', undo:'Undo', hint:'Hint', check:'Check',
   ruleOut:'Rule out', place:'Place', vclues:'Vertical clues', hclues:'Horizontal clues',
@@ -463,7 +463,7 @@ const I18N={
   locale:'en-GB'
  },
  he:{
-  title:'לוגיקה', other:'English', otherAria:'Switch to English',
+  title:'לוגיקה', self:'עברית', switchTo:x=>`מעבר ל־${x}`,
   lv_super:'קל מאוד', superNo:'לא בדיוק! המהלך הזה היה טעות, אז הוא לא בוצע. נסו מהלך אחר.',
   new:'חדש', lv_easy:'קל', lv_normal:'רגיל', lv_hard:'קשה', undo:'בטל', hint:'רמז', check:'בדוק',
   ruleOut:'פסול', place:'הצב', vclues:'רמזים אנכיים', hclues:'רמזים אופקיים',
@@ -532,8 +532,81 @@ const I18N={
   switchAsk:(n,o)=>`לשחק בשם ${n}? החידה הנוכחית תיחשב כלא פתורה עבור ${o}.`,
   nowPlaying:n=>`משחק עכשיו: ${n}.`, asGuest:'משחקים עכשיו כאורח.',
   locale:'he-IL'
+ },
+ nl:{
+  title:'Logica', self:'Nederlands', switchTo:x=>`Overschakelen naar ${x}`,
+  lv_super:'Supermakkelijk', superNo:'Niet helemaal! Die zet zou een fout zijn, dus hij is niet gedaan. Probeer een andere.',
+  new:'Nieuw', lv_easy:'Makkelijk', lv_normal:'Normaal', lv_hard:'Moeilijk', undo:'Ongedaan', hint:'Hint', check:'Controle',
+  ruleOut:'Wegstrepen', place:'Plaatsen', vclues:'Verticale aanwijzingen', hclues:'Horizontale aanwijzingen',
+  dlOffline:'Downloaden om offline te spelen', dlNote:'Slaat het hele spel op als één bestand. Open het in een browser om te spelen, zonder installatie.',
+  dlSignIn:'Downloaden kan hier niet. Open dit adres in je browser om het spel te spelen of te downloaden: https://timmerge-logic.github.io/logic/dutch.html',
+  dlWait:'Het opslagvenster gaat open… Bevestig het om het bestand op te slaan.', dlDeclined:'Download geannuleerd.',
+  dlSaved:'Opgeslagen. Open het bestand om te spelen.', dlFail:'Het bestand kon niet worden opgeslagen. Probeer het opnieuw.',
+  pwaInstall:'Spel installeren', pwaNote:'Zet Logica als app op je apparaat. Werkt ook zonder internet.',
+  pwaDone:'Geïnstalleerd. Je vindt Logica op je beginscherm of bij je apps.',
+  pwaIOS:'Op iPhone of iPad: open deze pagina in Safari, tik op de deelknop en kies ‘Zet op beginscherm’.',
+  pwaMenu:'Open het menu van je browser (⋮) en kies ‘App installeren’ of ‘Toevoegen aan startscherm’.',
+  theme:'Donkere / lichte modus', credits:'Gemaakt door <b>Yochai</b> en <b>Ge Timmer</b>',
+  time:'Tijd', difficulty:'Moeilijkheid', sound:'Geluid', howTo:'Zo speel je', tapModes:'Wat een tik doet',
+  solvedTitle:'Puzzel opgelost!', wellDone:'Goed beredeneerd.', close:'Sluiten', newPuzzle:'Nieuwe puzzel', scores:'Scores',
+  yes:'Ja', no:'Nee', ok:'OK',
+  cats:['fruit','dobbelstenen','kaarten','voertuigen','smileys','weer'],
+  names:[['appel','banaan','kersen','druiven','sinaasappel','peer'],['dobbelsteen 1','dobbelsteen 2','dobbelsteen 3','dobbelsteen 4','dobbelsteen 5','dobbelsteen 6'],['schoppen','harten','ruiten','klaveren','kroon','ster'],['auto','bus','fiets','vliegtuig','zeilboot','raket'],['blij','lachend','knipogend','cool','verbaasd','boos'],['zon','wolk','regen','onweer','sneeuw','maan']],
+  help:cats=>['Elke rij heeft zes verschillende plaatjes, één per kolom. Zoek uit waar elk plaatje hoort.',
+   'Modus <b>Wegstrepen</b>: tik op een klein plaatje om het uit dat vakje te halen. Modus <b>Plaatsen</b>: tik om het daar neer te zetten. Lang indrukken of rechtsklikken doet altijd het andere.',
+   'Een vakje met nog maar één plaatje vult zichzelf in, en een plaatje met nog maar één vakje over in zijn rij ook.',
+   'Tik op een aanwijzing om hem in woorden te lezen en hem grijs te maken als je hem hebt gebruikt.',
+   'Elke puzzel heeft precies één oplossing, en die vind je met alleen logica.',
+   '<b>Opnieuw</b> begint dezelfde puzzel weer vanaf het begin, met de klok terug op nul. <b>Herstel</b> brengt je terug naar vlak voor je eerste fout, en houdt alle goede zetten die je daarvoor deed.',
+   'Niveau <b>Supermakkelijk</b>: er staan meer plaatjes al op hun plek, er zijn extra aanwijzingen, en een foute zet wordt tegengehouden voordat hij gebeurt.',
+   `Elke rij heeft een eigen kleur, en de aanwijzingen hebben dezelfde kleur, zodat je ziet bij welke rij een plaatje hoort: ${cats}. Verticale aanwijzingen staan altijd in de volgorde van de rijen, van boven naar beneden.`,
+   'Voeg spelers toe met de bekerknop bovenaan. Van elke speler worden de laatste 50 spellen bewaard, met het slagingspercentage en de tijden. Een puzzel die je niet afmaakt, telt als niet opgelost.'],
+  same3:(a,b,c)=>`${a}, ${b} en ${c} staan in dezelfde kolom.`, same2:(a,b)=>`${a} en ${b} staan in dezelfde kolom.`,
+  notsame:(a,b)=>`${a} en ${b} staan niet in dezelfde kolom.`, next:(a,b)=>`${a} staat naast ${b} (aan een van beide kanten).`,
+  notnext:(a,b)=>`${a} staat niet naast ${b}.`, left:(a,b)=>`${a} staat ergens links van ${b}.`,
+  between:(a,b,c)=>`${b} staat tussen ${a} en ${c} en raakt ze allebei (in willekeurige volgorde).`,
+  cellAria:(r,c,n)=>`Rij ${r}, kolom ${c}: ${n}`, candAria:(n,r,c)=>`${n}, rij ${r}, kolom ${c}`,
+  clueCount:(a,b)=>`Aanwijzingen ${a}/${b}`,
+  winSub:(lv,tm)=>`Puzzel op niveau ${lv.toLowerCase()} opgelost in ${tm}.`,
+  winSaved:n=>` Opgeslagen bij de scores van ${n}.`,
+  solvedStatus:'Opgelost! Druk op Nieuw voor een volgende puzzel.',
+  fullWrong:'Alle vakjes zijn gevuld, maar er klopt iets niet. Druk op Controle om te zien waar.',
+  ruledOut:(x,c)=>`${x} weggestreept in kolom ${c}.`, placed:(x,c)=>`${x} geplaatst in kolom ${c}.`,
+  mistakeHint:n=>`Er zit een fout in: ${n===1?'het omlijnde vakje laat':'de omlijnde vakjes laten'} het juiste antwoord niet meer toe. Maak zetten ongedaan tot je voorbij de fout bent.`,
+  hintMsg:(d,x,c)=>`${d} Dus ${x} kan niet in kolom ${c} staan.`,
+  noHint:'Met één aanwijzing alleen kom je hier niet verder. Probeer twee aanwijzingen te combineren.',
+  checkBad:n=>`${n===1?'1 vakje heeft':n+' vakjes hebben'} een fout (rood omlijnd). Gebruik Ongedaan om terug te gaan.`,
+  checkOk:'Nog geen fouten.',
+  lg:['Zelfde kolom: deze staan in dezelfde kolom.','Niet in dezelfde kolom.','Naast elkaar, aan een van beide kanten.','Niet naast elkaar.','De eerste staat ergens links van de tweede.','De middelste staat tussen de twee buitenste en raakt ze allebei, in willekeurige volgorde.'],
+  tipPlace:'Tikken plaatst een plaatje. Lang indrukken of rechtsklikken streept het weg.',
+  tipOut:'Tikken streept een plaatje weg. Lang indrukken of rechtsklikken plaatst het.',
+  undid:'Laatste zet ongedaan gemaakt.', building:'Nieuwe puzzel maken…',
+  restart:'Opnieuw', rewind:'Herstel', restartAsk:'Dezelfde puzzel opnieuw beginnen vanaf het begin?',
+  restarted:'Zelfde puzzel, nieuwe start.', noMistake:'Nog geen fouten, dus er is niets om naar terug te gaan.',
+  rewound:n=>`${n===1?'1 zet':n+' zetten'} teruggegaan, naar vlak voor je eerste fout.`,
+  newMsg:(lv,tip)=>`Nieuwe puzzel (${lv.toLowerCase()}). ${tip}`,
+  abandon:'Deze puzzel opgeven en een nieuwe beginnen?',
+  abandonP:n=>`Deze puzzel opgeven en een nieuwe beginnen? Hij telt als niet opgelost voor ${n}.`,
+  switchDiff:lv=>`Een nieuwe puzzel op niveau ${lv.toLowerCase()} beginnen? Je huidige puzzel gaat verloren.`,
+  guest:'Gast', scoreTitle:'Spelers & scores', namePh:'Naam speler', add:'Speler toevoegen',
+  dupName:'Die naam bestaat al.',
+  th_player:'Speler', th_games:'Spellen', th_rate:'Gelukt', th_avg:'Gem. tijd', th_best:'Beste',
+  th_date:'Datum', th_level:'Niveau', th_result:'Resultaat', th_time:'Tijd', th_hints:'Hints',
+  pause:'Pauze', resume:'Verder', pausedMsg:'Gepauzeerd. Het bord is verborgen tot je verdergaat.',
+  recent:'Laatste 4 spellen', recentEmpty:'Nog geen spellen. Voeg spelers toe met de bekerknop bovenaan om scores bij te houden.',
+  current:'bezig', solved:'Opgelost', notSolved:'Niet opgelost', remove:n=>`${n} verwijderen`,
+  noPlayers:'Nog geen spelers. Voeg er een toe om scores bij te houden.',
+  guestNote:'Je speelt als gast, dus spellen worden niet bewaard. Tik op een speler om als die speler te spelen.',
+  pickNote:'Tik op een speler om als die speler te spelen en de spellen te zien. Scores worden op dit apparaat bewaard.',
+  histTitle:(n,k)=>`${n}: laatste ${k} ${k===1?'spel':'spellen'}`, histEmpty:n=>`${n} heeft nog geen spellen.`,
+  removeAsk:n=>`${n} en alle scores verwijderen?`,
+  switchAsk:(n,o)=>`Spelen als ${n}? De puzzel die bezig is, telt als niet opgelost voor ${o}.`,
+  nowPlaying:n=>`Speler nu: ${n}.`, asGuest:'Je speelt nu als gast.',
+  locale:'nl-NL'
  }
 };
+const LANGS=['en','nl','he'];
+const nextLang=()=>LANGS[(LANGS.indexOf(LANG)+1)%LANGS.length];
 let LANG=DEFAULT_LANG;
 try{const q=new URLSearchParams(location.search).get('lang');if(q&&I18N[q]){LANG=q;localStorage.setItem('eliminate:lang',q)}else if(location.hostname!=='timmerge-logic.github.io'){/* on the website each page keeps its own language */const s=localStorage.getItem('eliminate:lang');if(s&&I18N[s])LANG=s}}catch(e){}
 const T=()=>I18N[LANG];
@@ -818,8 +891,9 @@ function applyLang(){
   document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=L[el.dataset.t]});
   document.querySelectorAll('[data-t-aria]').forEach(el=>el.setAttribute('aria-label',L[el.dataset.tAria]));
   document.querySelectorAll('[data-t-ph]').forEach(el=>el.setAttribute('placeholder',L[el.dataset.tPh]));
-  $('langBtn').textContent=L.other; $('langBtn').setAttribute('aria-label',L.otherAria);
-  $('langBtn').lang=LANG==='he'?'en':'he';
+  const N=I18N[nextLang()];
+  $('langBtn').textContent=N.self; $('langBtn').setAttribute('aria-label',L.switchTo(N.self));
+  $('langBtn').lang=nextLang();
   const cats=L.cats.map((c,r)=>`<span class="r${r}"><span class="rowtag"></span>${c}</span>`).join(', ');
   $('helpList').innerHTML=L.help(cats).map(x=>`<li>${x}</li>`).join('');
 }
@@ -959,7 +1033,7 @@ function pwaLabel(){
 }
 if(onSite){
   const m=document.createElement('link');m.rel='manifest';
-  m.href=/hebrew\.html$/.test(location.pathname)?'manifest-he.webmanifest':'manifest.webmanifest';
+  m.href=/hebrew\.html$/.test(location.pathname)?'manifest-he.webmanifest':/dutch\.html$/.test(location.pathname)?'manifest-nl.webmanifest':'manifest.webmanifest';
   document.head.appendChild(m);
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
   addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;pwaLabel()});
@@ -993,7 +1067,7 @@ $('dlBtn').onclick=async()=>{
     if(isAndroid){$('dlMsg').textContent=T().pwaMenu;return}
   }
   const html=PAGE_SRC.replace(/const DEFAULT_LANG='\w+'/,`const DEFAULT_LANG='${LANG}'`);
-  const name=LANG==='he'?'Hebrew Logic.html':'Logic.html';
+  const name={he:'Hebrew Logic.html',nl:'Logica.html'}[LANG]||'Logic.html';
   $('dlMsg').textContent=T().dlWait;
   await dlReady;
   $('dlMsg').textContent='';
@@ -1101,7 +1175,7 @@ $('diff').onchange=()=>{
 
 /* language switch */
 $('langBtn').onclick=()=>{
-  LANG=LANG==='he'?'en':'he';
+  LANG=nextLang();
   try{localStorage.setItem('eliminate:lang',LANG)}catch(e){}
   applyLang(); render(); status(S.paused?T().pausedMsg:modeTip());
   if(!$('helpDlg').hidden) buildLegend();
