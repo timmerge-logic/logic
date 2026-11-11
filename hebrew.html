@@ -163,6 +163,9 @@ fieldset.grp legend{float:left;width:100%;padding:0 0 10px;font:700 12px var(--f
 .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip.guest span{color:var(--muted)}
 .langb{min-height:34px;padding:0 10px;border-radius:999px;font-size:13px}
+.langb .lshort{display:none}
+@media (max-width:520px){.langb .lfull{display:none}.langb .lshort{display:inline}}
+@media (max-width:340px){.win>.titlebar{gap:3px!important}.langb{padding:0 6px!important}.chip{max-width:64px!important}}
 @media (max-width:420px){.win>.titlebar .ttl{font-size:20px}.chip{max-width:96px}.clock{padding:6px 9px}}
 .dlg.wide{max-width:600px}
 .dlg .content>*{min-width:0}.addrow{display:flex;gap:8px}
@@ -218,7 +221,8 @@ body.paused .board,body.paused .colnums,body.paused .side .well{filter:blur(9px)
       <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="#bfe3ff" stroke="#fff" stroke-width="1.6"/><path d="M10 10l4.5 4.5" stroke="#fff" stroke-width="2.4" stroke-linecap="square"/></svg>
       <span class="ttl" data-t="title">Logic</span>
       <button class="b95 chip" id="playerBtn" type="button" data-t-aria="scoreTitle" aria-label="Players &amp; scores"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6h10v2.5a5 5 0 0 1-10 0z" fill="#f4bf1f" stroke="currentColor" stroke-width="1.2"/><path d="M3 7H1.5c0 2 1 3 2.5 3M13 7h1.5c0 2-1 3-2.5 3" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 13h3M8 12v1" stroke="currentColor" stroke-width="1.4"/></svg><span id="playerName">Guest</span></button>
-      <button class="b95 langb" id="langBtn" type="button">עברית</button>
+      <button class="b95 langb" id="langBtn" type="button">Nederlands</button>
+      <button class="b95 langb" id="langBtn2" type="button">עברית</button>
       <span class="clock" id="timer" data-t-aria="time" aria-label="Time">00:00</span>
       <button class="b95 pauseb" id="pauseBtn" type="button" aria-pressed="false" aria-label="Pause"><svg viewBox="0 0 16 16" aria-hidden="true"><path id="icPause" d="M4.5 3h2.5v10H4.5zM9 3h2.5v10H9z" fill="currentColor"/><path id="icPlay" d="M5 2.5l8.5 5.5L5 13.5z" fill="currentColor" style="display:none"/></svg></button>
     </div>
@@ -392,7 +396,7 @@ const ROWS=[
 const DEFAULT_LANG='he';
 const I18N={
  en:{
-  title:'Logic', self:'English', switchTo:x=>`Switch to ${x}`,
+  title:'Logic', self:'English', short:'EN', switchTo:x=>`Switch to ${x}`,
   lv_super:'Super easy', superNo:'Not quite! That move would be a mistake, so it wasn’t made. Try another one.',
   new:'New', lv_easy:'Easy', lv_normal:'Normal', lv_hard:'Hard', undo:'Undo', hint:'Hint', check:'Check',
   ruleOut:'Rule out', place:'Place', vclues:'Vertical clues', hclues:'Horizontal clues',
@@ -463,7 +467,7 @@ const I18N={
   locale:'en-GB'
  },
  he:{
-  title:'לוגיקה', self:'עברית', switchTo:x=>`מעבר ל־${x}`,
+  title:'לוגיקה', self:'עברית', short:'עב', switchTo:x=>`מעבר ל־${x}`,
   lv_super:'קל מאוד', superNo:'לא בדיוק! המהלך הזה היה טעות, אז הוא לא בוצע. נסו מהלך אחר.',
   new:'חדש', lv_easy:'קל', lv_normal:'רגיל', lv_hard:'קשה', undo:'בטל', hint:'רמז', check:'בדוק',
   ruleOut:'פסול', place:'הצב', vclues:'רמזים אנכיים', hclues:'רמזים אופקיים',
@@ -534,7 +538,7 @@ const I18N={
   locale:'he-IL'
  },
  nl:{
-  title:'Logica', self:'Nederlands', switchTo:x=>`Overschakelen naar ${x}`,
+  title:'Logica', self:'Nederlands', short:'NL', switchTo:x=>`Overschakelen naar ${x}`,
   lv_super:'Supermakkelijk', superNo:'Niet helemaal! Die zet zou een fout zijn, dus hij is niet gedaan. Probeer een andere.',
   new:'Nieuw', lv_easy:'Makkelijk', lv_normal:'Normaal', lv_hard:'Moeilijk', undo:'Ongedaan', hint:'Hint', check:'Controle',
   ruleOut:'Wegstrepen', place:'Plaatsen', vclues:'Verticale aanwijzingen', hclues:'Horizontale aanwijzingen',
@@ -606,7 +610,6 @@ const I18N={
  }
 };
 const LANGS=['en','nl','he'];
-const nextLang=()=>LANGS[(LANGS.indexOf(LANG)+1)%LANGS.length];
 let LANG=DEFAULT_LANG;
 try{const q=new URLSearchParams(location.search).get('lang');if(q&&I18N[q]){LANG=q;localStorage.setItem('eliminate:lang',q)}else if(location.hostname!=='timmerge-logic.github.io'){/* on the website each page keeps its own language */const s=localStorage.getItem('eliminate:lang');if(s&&I18N[s])LANG=s}}catch(e){}
 const T=()=>I18N[LANG];
@@ -891,9 +894,11 @@ function applyLang(){
   document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=L[el.dataset.t]});
   document.querySelectorAll('[data-t-aria]').forEach(el=>el.setAttribute('aria-label',L[el.dataset.tAria]));
   document.querySelectorAll('[data-t-ph]').forEach(el=>el.setAttribute('placeholder',L[el.dataset.tPh]));
-  const N=I18N[nextLang()];
-  $('langBtn').textContent=N.self; $('langBtn').setAttribute('aria-label',L.switchTo(N.self));
-  $('langBtn').lang=nextLang();
+  LANGS.filter(k=>k!==LANG).forEach((k,i)=>{
+    const b=$(i?'langBtn2':'langBtn'),N=I18N[k];
+    b.innerHTML=`<span class="lfull">${N.self}</span><span class="lshort">${N.short}</span>`;
+    b.setAttribute('aria-label',L.switchTo(N.self)); b.title=N.self; b.lang=k; b.dataset.lang=k;
+  });
   const cats=L.cats.map((c,r)=>`<span class="r${r}"><span class="rowtag"></span>${c}</span>`).join(', ');
   $('helpList').innerHTML=L.help(cats).map(x=>`<li>${x}</li>`).join('');
 }
@@ -1174,8 +1179,8 @@ $('diff').onchange=()=>{
 };
 
 /* language switch */
-$('langBtn').onclick=()=>{
-  LANG=nextLang();
+$('langBtn').onclick=$('langBtn2').onclick=e=>{
+  LANG=e.currentTarget.dataset.lang;
   try{localStorage.setItem('eliminate:lang',LANG)}catch(e){}
   applyLang(); render(); status(S.paused?T().pausedMsg:modeTip());
   if(!$('helpDlg').hidden) buildLegend();
