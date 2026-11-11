@@ -234,7 +234,7 @@ body.paused .board,body.paused .colnums,body.paused .side .well{filter:blur(9px)
         </select>
         <span class="sep"></span>
         <button class="b95 grow" id="undoBtn" type="button"><svg viewBox="0 0 16 16"><path d="M5 3L1.5 6.5 5 10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 6.5h7a4.5 4.5 0 0 1 0 9H6" fill="none" stroke="currentColor" stroke-width="2"/></svg><span data-t="undo">Undo</span></button>
-        <button class="b95 grow" id="rewindBtn" type="button"><svg viewBox="0 0 16 16"><path d="M8 3.5L2.5 8 8 12.5zM14 3.5L8.5 8 14 12.5z" fill="currentColor"/></svg><span data-t="rewind">Before mistake</span></button>
+        <button class="b95 grow" id="rewindBtn" type="button"><svg viewBox="0 0 16 16"><path d="M8 3.5L2.5 8 8 12.5zM14 3.5L8.5 8 14 12.5z" fill="currentColor"/></svg><span data-t="rewind">Recover</span></button>
         <button class="b95 grow" id="hintBtn" type="button"><svg viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-3 9v2h6v-2a5 5 0 0 0-3-9z" fill="#ffe24a" stroke="currentColor"/><path d="M5.5 14h5" stroke="currentColor" stroke-width="1.6"/></svg><span data-t="hint">Hint</span></button>
         <button class="b95 grow" id="checkBtn" type="button"><svg viewBox="0 0 16 16"><path d="M2 8.5l4 4 8-9" fill="none" class="okmark" stroke-width="2.6"/></svg><span data-t="check">Check</span></button>
         <button class="b95" id="soundBtn" type="button" aria-pressed="true" data-t-aria="sound" aria-label="Sound"><svg viewBox="0 0 16 16"><path d="M2 6h3l4-3.5v11L5 10H2z" fill="currentColor"/><path id="waves" d="M11 5.5a3.5 3.5 0 0 1 0 5M12.8 3.5a6 6 0 0 1 0 9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
@@ -438,7 +438,7 @@ const I18N={
   tipPlace:'Tap places a picture. Long-press or right-click rules it out.',
   tipOut:'Tap rules a picture out. Long-press or right-click places it.',
   undid:'Undid the last move.', building:'Building a new puzzle…',
-  restart:'Restart', rewind:'Before mistake', restartAsk:'Start this same puzzle again from the beginning?',
+  restart:'Restart', rewind:'Recover', restartAsk:'Start this same puzzle again from the beginning?',
   restarted:'Same puzzle, fresh start.', noMistake:'No mistakes so far, so there is nothing to go back to.',
   rewound:n=>`Went back ${n===1?'1 move':n+' moves'}, to just before your first mistake.`,
   newMsg:(lv,tip)=>`New ${lv.toLowerCase()} puzzle. ${tip}`,
