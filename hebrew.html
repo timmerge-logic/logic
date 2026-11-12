@@ -798,12 +798,35 @@ function tone(f,d,type,vol,when){
     o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+d+.02);
   }catch(e){}
 }
+/* a held note that swells in and fades out, for the victory tune */
+function swell(f,d,type,vol,when){
+  if(!soundOn) return;
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    const t=ac.currentTime+(when||0), o=ac.createOscillator(), g=ac.createGain();
+    o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.03);
+    g.gain.setValueAtTime(vol,t+Math.max(.04,d*.7)); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+d+.02);
+  }catch(e){}
+}
+/* Original stadium-style victory tune: a rising melody over a slow bass, ending on a big held chord. */
+function anthem(){
+  const B=.22; // one beat, in seconds
+  const mel=[[392,1],[523,1],[659,1],[784,2],[659,1],[698,1],[880,1],[784,1],[659,2],[523,1],
+             [587,1],[659,1],[698,1],[784,1.5],[880,.5],[988,1]];
+  let at=0;
+  for(const [f,n] of mel){swell(f,n*B*.95,'triangle',.07,at);swell(f,n*B*.95,'sawtooth',.012,at);at+=n*B}
+  [131,131,175,131,98,98].forEach((f,k)=>swell(f,3*B*.95,'triangle',.08,k*3*B));
+  [523,659,784,1047].forEach(f=>{swell(f,4*B+.6,'triangle',.05,at);swell(f,4*B+.6,'sawtooth',.008,at)});
+  swell(131,4*B+.6,'triangle',.09,at);
+}
 const sfx={
   out:()=>tone(520,.05,'square',.03),
   place:()=>{tone(660,.06,'square',.04);tone(990,.08,'square',.035,.06)},
   bad:()=>{tone(150,.22,'sawtooth',.05)},
   hint:()=>{tone(880,.06,'triangle',.06);tone(1175,.1,'triangle',.06,.07)},
-  win:()=>[523,659,784,1047,784,1047].forEach((f,k)=>tone(f,.16,'square',.04,k*.11))
+  win:anthem
 };
 
 /* ---------- rendering ---------- */
