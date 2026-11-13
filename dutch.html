@@ -144,6 +144,20 @@ fieldset.grp legend{float:left;width:100%;padding:0 0 10px;font:700 12px var(--f
 .legend .li{display:flex;align-items:center;gap:12px}
 .legend .li .clue{cursor:default;flex:none}
 .help-list{margin:0;padding-left:18px;display:grid;gap:5px;max-width:65ch}
+/* Print button on the help screen: prints only the help, on A4 */
+@page{size:A4;margin:15mm}
+@media print{
+  body.print-help>*:not(#helpDlg){display:none!important}
+  body.print-help{background:#fff!important;color:#000!important}
+  body.print-help #helpDlg{position:static;display:block;background:none;backdrop-filter:none;padding:0}
+  body.print-help #helpDlg .dlg{max-width:none!important;width:auto;box-shadow:none;border:0;background:#fff;color:#000;max-height:none;overflow:visible}
+  body.print-help #helpDlg .content{overflow:visible;padding:0}
+  body.print-help #helpDlg .titlebar{background:none!important;color:#000!important;padding:0 0 6px;font-size:20pt;border-bottom:1px solid #999}
+  body.print-help #helpDlg .help-list{max-width:none;font-size:11pt;gap:6px}
+  body.print-help #helpDlg .legend .li{break-inside:avoid}
+  body.print-help #offlineBox,body.print-help #helpDlg .btns,body.print-help #printMsg{display:none!important}
+  body.print-help *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 .offline{display:grid;gap:6px;padding:12px;border-radius:12px;background:var(--accent-soft)}
 .offline[hidden]{display:none}
 .offline p{margin:0;font-size:13px;color:var(--muted)}
@@ -327,7 +341,8 @@ body.paused .board,body.paused .colnums,body.paused .side .well{filter:blur(9px)
         <p class="dlmsg" id="dlMsg" role="status"></p>
       </div>
       <p class="credits" id="credits"></p>
-      <div class="btns"><button class="b95 def" id="helpOk" type="button" data-t="ok">OK</button></div>
+      <p class="dlmsg" id="printMsg" role="status"></p>
+      <div class="btns"><button class="b95" id="helpPrint" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6V1.5h8V6M4 12H2.5V6.5h11V12H12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M4.5 9.5h7v5h-7z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span data-t="print">Print</span></button><button class="b95 def" id="helpOk" type="button" data-t="ok">OK</button></div>
     </div>
   </div>
 </div>
@@ -411,7 +426,8 @@ const I18N={
   theme:'Dark / light mode', credits:'Created by <b>Yochai</b> and <b>Ge Timmer</b>',
   time:'Time', difficulty:'Difficulty', sound:'Sound', howTo:'How to play', tapModes:'What a tap does',
   solvedTitle:'Puzzle solved!', wellDone:'Well reasoned.', close:'Close', newPuzzle:'New puzzle', scores:'Scores',
-  yes:'Yes', no:'No', ok:'OK',
+  yes:'Yes', no:'No', ok:'OK', print:'Print',
+  printNo:'If no print window opened, printing is blocked here. Open the game at https://timmerge-logic.github.io/logic/ and print the help from there.',
   cats:['fruit','dice','cards','vehicles','smileys','weather'],
   names:[['apple','banana','cherries','grapes','orange','pear'],['die 1','die 2','die 3','die 4','die 5','die 6'],['spade','heart','diamond','club','crown','star'],['car','bus','bike','plane','sailboat','rocket'],['happy','laughing','winking','cool','surprised','angry'],['sun','cloud','rain','storm','snow','moon']],
   help:cats=>['Each row holds six different pictures, one per column. Work out where every picture goes.',
@@ -485,7 +501,8 @@ const I18N={
   theme:'מצב כהה / בהיר', credits:'נוצר על ידי <b>Yochai</b> ו־<b>Ge Timmer</b>',
   time:'זמן', difficulty:'רמת קושי', sound:'צליל', howTo:'איך משחקים', tapModes:'מה עושה הקשה',
   solvedTitle:'החידה נפתרה!', wellDone:'חשיבה מצוינת!', close:'סגור', newPuzzle:'חידה חדשה', scores:'ניקוד',
-  yes:'כן', no:'לא', ok:'אישור',
+  yes:'כן', no:'לא', ok:'אישור', print:'הדפסה',
+  printNo:'אם לא נפתח חלון הדפסה, ההדפסה חסומה כאן. פתחו את המשחק בכתובת https://timmerge-logic.github.io/logic/hebrew.html והדפיסו את ההסבר משם.',
   cats:['פירות','קוביות','קלפים','כלי תחבורה','סמיילים','מזג אוויר'],
   names:[['תפוח','בננה','דובדבנים','ענבים','תפוז','אגס'],['קובייה 1','קובייה 2','קובייה 3','קובייה 4','קובייה 5','קובייה 6'],['עלה','לב','יהלום','תלתן','כתר','כוכב'],['מכונית','אוטובוס','אופניים','מטוס','סירת מפרש','טיל'],['שמח','צוחק','קורץ','מגניב','מופתע','כועס'],['שמש','ענן','גשם','סערה','שלג','ירח']],
   help:cats=>['בכל שורה יש שש תמונות שונות, אחת בכל עמודה. גלו איפה נמצאת כל תמונה.',
@@ -559,7 +576,8 @@ const I18N={
   theme:'Donkere / lichte modus', credits:'Gemaakt door <b>Yochai</b> en <b>Ge Timmer</b>',
   time:'Tijd', difficulty:'Moeilijkheid', sound:'Geluid', howTo:'Zo speel je', tapModes:'Wat een tik doet',
   solvedTitle:'Puzzel opgelost!', wellDone:'Goed beredeneerd.', close:'Sluiten', newPuzzle:'Nieuwe puzzel', scores:'Scores',
-  yes:'Ja', no:'Nee', ok:'OK',
+  yes:'Ja', no:'Nee', ok:'OK', print:'Afdrukken',
+  printNo:'Als er geen afdrukvenster openging, is afdrukken hier geblokkeerd. Open het spel op https://timmerge-logic.github.io/logic/dutch.html en druk de uitleg daar af.',
   cats:['fruit','dobbelstenen','kaarten','voertuigen','smileys','weer'],
   names:[['appel','banaan','kersen','druiven','sinaasappel','peer'],['dobbelsteen 1','dobbelsteen 2','dobbelsteen 3','dobbelsteen 4','dobbelsteen 5','dobbelsteen 6'],['schoppen','harten','ruiten','klaveren','kroon','ster'],['auto','bus','fiets','vliegtuig','zeilboot','raket'],['blij','lachend','knipogend','cool','verbaasd','boos'],['zon','wolk','regen','onweer','sneeuw','maan']],
   help:cats=>['Elke rij heeft zes verschillende plaatjes, één per kolom. Zoek uit waar elk plaatje hoort.',
@@ -1041,7 +1059,19 @@ function buildLegend(){
   $('legend').innerHTML=ex.map(([cl,txt])=>`<div class="li"><span class="clue ${isV(cl)?'v':'h'}">${clueInner(cl)}</span><span>${txt}</span></div>`).join('');
 }
 $('helpBtn').onclick=()=>{buildLegend();$('helpDlg').hidden=false;$('helpDlg').querySelector('.content').scrollTop=0;$('helpOk').focus({preventScroll:true})};
-$('helpOk').onclick=()=>{$('helpDlg').hidden=true};
+$('helpOk').onclick=()=>{$('helpDlg').hidden=true;$('printMsg').textContent=''};
+/* Print the help in the light theme, then put the player's theme back */
+$('helpPrint').onclick=()=>{
+  const theme=document.documentElement.dataset.theme;
+  $('printMsg').textContent='';
+  document.documentElement.dataset.theme='light'; document.body.classList.add('print-help');
+  const t0=Date.now();
+  try{window.print()}catch(e){}
+  const quick=Date.now()-t0<300;
+  document.body.classList.remove('print-help'); document.documentElement.dataset.theme=theme;
+  /* Inside the Claude page the browser may silently refuse to print */
+  if(quick&&!isTop) $('printMsg').textContent=T().printNo;
+};
 /* Offline copy: only where the claude.ai viewer offers downloads (hidden in the saved file itself). */
 let dl=null;
 /* On claude.ai: button when the viewer offers downloads, otherwise a sign-in note (its frame blocks plain downloads).
