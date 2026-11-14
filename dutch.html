@@ -2,6 +2,8 @@
 <title>Logica</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- The game has its own dark mode, so phones must not darken it themselves (that hid the dots on the dice) -->
+<meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800&family=Sora:wght@600;700&family=Manrope:wght@500;600;700;800&display=swap">
@@ -9,6 +11,7 @@
 /* Layout: one app card. Phone: header, toolbar, board, clue panels, status stacked. From 900px: board left, clue panels right.
    Look: modern game table. Illustrated tiles sit on soft "card" cells; one teal accent for selection and state. */
 :root{
+  color-scheme:only light;
   --bg:#E9EDF2; --surface:#FFFFFF; --cell:#F4F6F9; --solved:#FFFFFF; --ink:#111827; --muted:#667085; --line:#DDE2E9;
   --accent:#0E7C74; --accent-ink:#FFFFFF; --accent-soft:#D5EFEC; --bad:#D92D20; --hl:#FFE27A; --mid:#FFF3C4; --suit:#1B1B2A;
   --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px -6px rgba(16,24,40,.14);
@@ -170,7 +173,7 @@ fieldset.grp legend{float:left;width:100%;padding:0 0 10px;font:700 12px var(--f
 #dlBtn{justify-self:start}
 .credits{margin:0;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
 .credits b{color:var(--ink)}
-:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="light"]{color-scheme:only light}
 #themeBtn .ic-sun{display:none}
 :root[data-theme="dark"] #themeBtn .ic-sun{display:block}
 :root[data-theme="dark"] #themeBtn .ic-moon{display:none}
