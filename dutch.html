@@ -130,6 +130,9 @@ fieldset.grp legend{float:left;width:100%;padding:0 0 10px;font:700 12px var(--f
 .under{width:100%;height:7px;display:block;color:var(--ink)}
 .under svg{width:100%;height:7px;display:block}
 .clue.used{opacity:.3}
+.well .clue{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.clue.lifted{opacity:1;cursor:grabbing;z-index:2;border-color:var(--accent);transform:scale(1.08);box-shadow:0 6px 16px rgba(0,0,0,.25)}
+body.cdragging,body.cdragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
 .clue.hl{opacity:1;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
 @media (max-width:420px){.ct{width:31px;height:31px}.ct .ic{width:25px;height:25px}.rel{height:31px;width:20px}.rel .no svg{width:18px;height:18px}}
 
@@ -405,13 +408,13 @@ const ROWS=[
     FACE('#b48cff','#4b2499')+`<path d="M8.5 9.5c1.3-1.2 3.2-1.4 4.6-.6M23.5 9.5c-1.3-1.2-3.2-1.4-4.6-.6" stroke="#2a1a00" stroke-width="1.6" stroke-linecap="round" fill="none"/><circle cx="11.5" cy="13.5" r="2.7" fill="#fff" stroke="#2a1a00" stroke-width="1.2"/><circle cx="11.5" cy="13.7" r="1.3" fill="#2a1a00"/><circle cx="20.5" cy="13.5" r="2.7" fill="#fff" stroke="#2a1a00" stroke-width="1.2"/><circle cx="20.5" cy="13.7" r="1.3" fill="#2a1a00"/><ellipse cx="16" cy="21.5" rx="3" ry="3.8" fill="#6b1a1a" stroke="#2a1a00" stroke-width="1.2"/>`,
     FACE('#f2552c','#8a1d00')+`<path d="M8 9.5l5.5 2.6M24 9.5l-5.5 2.6" stroke="#2a0a00" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="14.6" r="1.8" fill="#2a0a00"/><circle cx="20" cy="14.6" r="1.8" fill="#2a0a00"/><path d="M10.5 23c3.5-3.6 7.5-3.6 11 0" stroke="#2a0a00" stroke-width="2.2" stroke-linecap="round" fill="none"/>`
   ]},
-  {name:'weather', names:['sun','cloud','rain','storm','snow','moon'], art:[
+  {name:'weather', names:['sun','cloud','rain','storm','snow','rainbow'], art:[
     `<g stroke="#f08a00" stroke-width="2.4" stroke-linecap="round"><path d="M16 2.5v4M16 25.5v4M2.5 16h4M25.5 16h4M6.4 6.4l2.9 2.9M22.7 22.7l2.9 2.9M25.6 6.4l-2.9 2.9M9.3 22.7l-2.9 2.9"/></g><circle cx="16" cy="16" r="7" fill="#ffd21f" stroke="#e07a00" stroke-width="1.5"/><circle cx="13.6" cy="13.6" r="2" fill="#fff" opacity=".6"/>`,
     `<path d="${CLOUD}" fill="#f4f7fb" stroke="#56627a" stroke-width="1.6"/><path d="M10 15.5a5 5 0 0 1 5-3.5" stroke="#b9c6dc" stroke-width="1.6" fill="none"/>`,
     `<g transform="translate(0 -5)"><path d="${CLOUD}" fill="#dfe6f0" stroke="#56627a" stroke-width="1.6"/></g><path d="M10.5 23.5l-2 4.5M16.5 23.5l-2 4.5M22.5 23.5l-2 4.5" stroke="#1f6fd8" stroke-width="2.4" stroke-linecap="round"/>`,
     `<g transform="translate(0 -5)"><path d="${CLOUD}" fill="#8b94a8" stroke="#2f3647" stroke-width="1.6"/></g><path d="M17.5 15.5l-5.5 7.5h4.5l-2.5 7 8-9.5h-4.5l2.5-5z" fill="#ffd21f" stroke="#8a5a00" stroke-width="1" stroke-linejoin="round"/>`,
     `<g stroke="#1e8ad6" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13"/><path d="M12.5 5.5 16 8.5l3.5-3M12.5 26.5l3.5-3 3.5 3M5 14l4.5-.8L8 9M27 18l-4.5.8L24 23M5 18l4.5.8L8 23M27 14l-4.5-.8L24 9"/></g>`,
-    `<path d="M20 3a13 13 0 1 0 9.2 20.4A11 11 0 0 1 20 3z" fill="#f6e27a" stroke="#8a7410" stroke-width="1.3"/><circle cx="10" cy="17" r="2" fill="#d8c04a"/><circle cx="14.5" cy="23.5" r="1.4" fill="#d8c04a"/><circle cx="9.5" cy="11" r="1.1" fill="#d8c04a"/>`
+    `<g fill="none" stroke-width="2.6"><path d="M2.5 24a13.5 13.5 0 0 1 27 0" stroke="#e8352b"/><path d="M5.1 24a10.9 10.9 0 0 1 21.8 0" stroke="#f59a1b"/><path d="M7.7 24a8.3 8.3 0 0 1 16.6 0" stroke="#f2d21b"/><path d="M10.3 24a5.7 5.7 0 0 1 11.4 0" stroke="#3aa845"/><path d="M12.9 24a3.1 3.1 0 0 1 6.2 0" stroke="#2f6fe0"/></g><path d="M1.5 27.5a3.2 3.2 0 0 1 3.4-3.3 3.6 3.6 0 0 1 6.6.4 2.7 2.7 0 0 1-.4 5.4H4.4a2.9 2.9 0 0 1-2.9-2.5zM20.9 27.5a3.2 3.2 0 0 1 3.4-3.3 3.6 3.6 0 0 1 6.6.4 2.7 2.7 0 0 1-.4 5.4h-6.7a2.9 2.9 0 0 1-2.9-2.5z" fill="#f4f7fb" stroke="#56627a" stroke-width="1.3"/>`
   ]}
 ];
 /* ---------- languages ---------- */
@@ -436,11 +439,12 @@ const I18N={
   yes:'Yes', no:'No', ok:'OK', print:'Print',
   printNo:'If no print window opened, printing is blocked here. Open the game at https://timmerge-logic.github.io/logic/ and print the help from there.',
   cats:['fruit','dice','cards','vehicles','smileys','weather'],
-  names:[['apple','banana','cherries','grapes','orange','pear'],['die 1','die 2','die 3','die 4','die 5','die 6'],['spade','heart','diamond','club','crown','star'],['car','bus','bike','plane','sailboat','rocket'],['happy','laughing','winking','cool','surprised','angry'],['sun','cloud','rain','storm','snow','moon']],
+  names:[['apple','banana','cherries','grapes','orange','pear'],['die 1','die 2','die 3','die 4','die 5','die 6'],['spade','heart','diamond','club','crown','star'],['car','bus','bike','plane','sailboat','rocket'],['happy','laughing','winking','cool','surprised','angry'],['sun','cloud','rain','storm','snow','rainbow']],
   help:cats=>['Each row holds six different pictures, one per column. Work out where every picture goes.',
    'The <b>Rule out</b> and <b>Place</b> buttons set what a tap does. In <b>Rule out</b> mode, tapping a small picture removes it from that cell. In <b>Place</b> mode, tapping a picture puts it in that cell. Long-press or right-click always does the other one.',
    'A cell with one picture left fills in by itself, and so does a picture with only one cell left in its row.',
    "Tap a clue to read it in words and grey it out once it's used up.",
+   'You can <b>move clues</b> to arrange them your way, for example to put clues with the same picture side by side. Drag a clue with the mouse, or on a phone hold it for a moment and then drag it.',
    'Every puzzle has exactly one answer, and you can reach it by logic alone.',
    '<b>Hint</b> points to a clue you can use right now and the picture it rules out, but leaves the move to you. If you have already made a mistake, it outlines the wrong cells instead. Every hint you use is counted in your scores.',
    '<b>Check</b> looks for mistakes: wrong cells are outlined in red, or it tells you there are none so far. It gives nothing else away.',
@@ -511,11 +515,12 @@ const I18N={
   yes:'כן', no:'לא', ok:'אישור', print:'הדפסה',
   printNo:'אם לא נפתח חלון הדפסה, ההדפסה חסומה כאן. פתחו את המשחק בכתובת https://timmerge-logic.github.io/logic/hebrew.html והדפיסו את ההסבר משם.',
   cats:['פירות','קוביות','קלפים','כלי תחבורה','סמיילים','מזג אוויר'],
-  names:[['תפוח','בננה','דובדבנים','ענבים','תפוז','אגס'],['קובייה 1','קובייה 2','קובייה 3','קובייה 4','קובייה 5','קובייה 6'],['עלה','לב','יהלום','תלתן','כתר','כוכב'],['מכונית','אוטובוס','אופניים','מטוס','סירת מפרש','טיל'],['שמח','צוחק','קורץ','מגניב','מופתע','כועס'],['שמש','ענן','גשם','סערה','שלג','ירח']],
+  names:[['תפוח','בננה','דובדבנים','ענבים','תפוז','אגס'],['קובייה 1','קובייה 2','קובייה 3','קובייה 4','קובייה 5','קובייה 6'],['עלה','לב','יהלום','תלתן','כתר','כוכב'],['מכונית','אוטובוס','אופניים','מטוס','סירת מפרש','טיל'],['שמח','צוחק','קורץ','מגניב','מופתע','כועס'],['שמש','ענן','גשם','סערה','שלג','קשת בענן']],
   help:cats=>['בכל שורה יש שש תמונות שונות, אחת בכל עמודה. גלו איפה נמצאת כל תמונה.',
    'הכפתורים <b>פסול</b> ו<b>הצב</b> קובעים מה עושה הקשה. במצב <b>פסול</b>, הקשה על תמונה קטנה מוציאה אותה מהתא. במצב <b>הצב</b>, הקשה על תמונה מציבה אותה בתא. לחיצה ארוכה או קליק ימני עושים תמיד את הפעולה השנייה.',
    'תא שנשארה בו תמונה אחת מתמלא מעצמו, וכך גם תמונה שנשאר לה רק תא אחד בשורה.',
    'הקישו על רמז כדי לקרוא אותו במילים ולסמן אותו באפור כשסיימתם איתו.',
+   'אפשר <b>להזיז רמזים</b> ולסדר אותם כרצונכם, למשל כדי לשים זה ליד זה רמזים עם אותה תמונה. גררו רמז עם העכבר, או בטלפון החזיקו אותו רגע ואז גררו.',
    'לכל חידה יש פתרון אחד בלבד, ואפשר להגיע אליו בהיגיון בלבד.',
    '<b>רמז</b> מראה רמז שאפשר להשתמש בו עכשיו ואיזו תמונה הוא פוסל, אבל את המהלך עושים בעצמכם. אם כבר נעשתה טעות, הוא מסמן במקום זה את התאים השגויים. כל רמז שמשתמשים בו נספר בניקוד.',
    '<b>בדוק</b> מחפש טעויות: תאים שגויים מסומנים באדום, ואם אין טעויות הוא אומר זאת. הוא לא מגלה שום דבר אחר.',
@@ -586,11 +591,12 @@ const I18N={
   yes:'Ja', no:'Nee', ok:'OK', print:'Afdrukken',
   printNo:'Als er geen afdrukvenster openging, is afdrukken hier geblokkeerd. Open het spel op https://timmerge-logic.github.io/logic/dutch.html en druk de uitleg daar af.',
   cats:['fruit','dobbelstenen','kaarten','voertuigen','smileys','weer'],
-  names:[['appel','banaan','kersen','druiven','sinaasappel','peer'],['dobbelsteen 1','dobbelsteen 2','dobbelsteen 3','dobbelsteen 4','dobbelsteen 5','dobbelsteen 6'],['schoppen','harten','ruiten','klaveren','kroon','ster'],['auto','bus','fiets','vliegtuig','zeilboot','raket'],['blij','lachend','knipogend','cool','verbaasd','boos'],['zon','wolk','regen','onweer','sneeuw','maan']],
+  names:[['appel','banaan','kersen','druiven','sinaasappel','peer'],['dobbelsteen 1','dobbelsteen 2','dobbelsteen 3','dobbelsteen 4','dobbelsteen 5','dobbelsteen 6'],['schoppen','harten','ruiten','klaveren','kroon','ster'],['auto','bus','fiets','vliegtuig','zeilboot','raket'],['blij','lachend','knipogend','cool','verbaasd','boos'],['zon','wolk','regen','onweer','sneeuw','regenboog']],
   help:cats=>['Elke rij heeft zes verschillende plaatjes, één per kolom. Zoek uit waar elk plaatje hoort.',
    'De knoppen <b>Wegstrepen</b> en <b>Plaatsen</b> bepalen wat een tik doet. Bij <b>Wegstrepen</b> haalt een tik op een klein plaatje het uit dat vakje. Bij <b>Plaatsen</b> zet een tik het plaatje in dat vakje. Lang indrukken of rechtsklikken doet altijd het andere.',
    'Een vakje met nog maar één plaatje vult zichzelf in, en een plaatje met nog maar één vakje over in zijn rij ook.',
    'Tik op een aanwijzing om hem in woorden te lezen en hem grijs te maken als je hem hebt gebruikt.',
+   'Je kunt <b>aanwijzingen verplaatsen</b> en ze ordenen zoals jij wilt, bijvoorbeeld om aanwijzingen met hetzelfde plaatje naast elkaar te zetten. Sleep een aanwijzing met de muis, of houd hem op een telefoon even vast en sleep hem dan.',
    'Elke puzzel heeft precies één oplossing, en die vind je met alleen logica.',
    '<b>Hint</b> wijst een aanwijzing aan die je nu kunt gebruiken en het plaatje dat je daarmee kunt wegstrepen, maar de zet doe je zelf. Heb je al een fout gemaakt, dan omlijnt hij in plaats daarvan de foute vakjes. Elke hint telt mee in je scores.',
    '<b>Controle</b> zoekt naar fouten: foute vakjes worden rood omlijnd, of je hoort dat er nog geen fouten zijn. Verder verklapt het niets.',
@@ -904,9 +910,15 @@ function renderBoard(){
   }
   $('board').innerHTML=h;
 }
+/* display order of the clues; the player can rearrange it by dragging */
+function clueOrder(){
+  const n=S.clues.length,o=Array.isArray(S.order)?S.order.filter(i=>i>=0&&i<n):[];
+  if(o.length!==n||new Set(o).size!==n) return S.clues.map((_,i)=>i);
+  return o;
+}
 function renderClues(){
   const v=[],hz=[];
-  S.clues.forEach((cl,i)=>(isV(cl)?v:hz).push(clueBtn(cl,i)));
+  clueOrder().forEach(i=>{const cl=S.clues[i];(isV(cl)?v:hz).push(clueBtn(cl,i))});
   $('vwell').innerHTML=v.join('');
   $('hwell').innerHTML=hz.join('');
   const left=S.used.filter(u=>!u).length;
@@ -1197,8 +1209,53 @@ board.addEventListener('contextmenu',e=>{
   if(lastType!=='mouse') return;
   const el=e.target.closest('.cand'); if(el) act(el,false);
 });
+/* Drag clues to rearrange them. Mouse: drag straight away. Touch: hold for a moment, then drag
+   (a quick swipe still scrolls the page). Clues move only within their own box. */
+let cdrag=null, cdragEnded=0;
+function cdragStart(){
+  const d=cdrag; d.on=true; d.el.classList.add('lifted'); document.body.classList.add('cdragging');
+  try{d.el.setPointerCapture(d.id)}catch(e){}
+  if(d.touch&&navigator.vibrate)try{navigator.vibrate(15)}catch(e){}
+}
+function cdragEnd(commit){
+  const d=cdrag; if(!d) return; cdrag=null; clearTimeout(d.timer);
+  if(!d.on) return;
+  d.el.classList.remove('lifted'); document.body.classList.remove('cdragging'); cdragEnded=Date.now();
+  if(commit){
+    const ids=w=>[...$(w).querySelectorAll('.clue')].map(b=>+b.dataset.clue);
+    S.order=[...ids('vwell'),...ids('hwell')]; save();
+  }
+  renderClues();
+}
+$('side').addEventListener('pointerdown',e=>{
+  const el=e.target.closest('.well .clue');
+  if(!el||S.paused||cdrag||(e.pointerType==='mouse'&&e.button!==0)) return;
+  const touch=e.pointerType!=='mouse';
+  cdrag={el,id:e.pointerId,x:e.clientX,y:e.clientY,on:false,touch,
+    timer:touch?setTimeout(()=>{if(cdrag&&!cdrag.on)cdragStart()},350):0};
+});
+document.addEventListener('pointermove',e=>{
+  const d=cdrag; if(!d||e.pointerId!==d.id) return;
+  if(!d.on){
+    const far=Math.hypot(e.clientX-d.x,e.clientY-d.y)>(d.touch?10:6);
+    if(!far) return;
+    if(d.touch){cdragEnd(false);return}   /* moved before the hold: it's a scroll */
+    cdragStart();
+  }
+  e.preventDefault();
+  const hit=document.elementsFromPoint(e.clientX,e.clientY).find(x=>x!==d.el&&x.classList&&x.classList.contains('clue')&&x.parentNode===d.el.parentNode);
+  if(!hit) return;
+  const kids=[...d.el.parentNode.children];
+  d.el.parentNode.insertBefore(d.el,kids.indexOf(d.el)<kids.indexOf(hit)?hit.nextSibling:hit);
+},{passive:false});
+document.addEventListener('pointerup',e=>{if(cdrag&&e.pointerId===cdrag.id)cdragEnd(true)});
+document.addEventListener('pointercancel',e=>{if(cdrag&&e.pointerId===cdrag.id)cdragEnd(!!cdrag.on)});
+/* while a clue is held, stop the page from scrolling under the finger */
+document.addEventListener('touchmove',e=>{if(cdrag&&cdrag.on)e.preventDefault()},{passive:false});
+$('side').addEventListener('contextmenu',e=>{if(e.target.closest('.well .clue'))e.preventDefault()});
 $('side').addEventListener('click',e=>{
   const el=e.target.closest('.clue'); if(!el||!el.dataset.clue||S.paused) return;
+  if(Date.now()-cdragEnded<400) return;
   const k=+el.dataset.clue;
   S.used[k]=!S.used[k]; view.hlClue=-1; save(); renderClues();
   status(describe(S.clues[k]));
