@@ -418,6 +418,7 @@ const ROWS=[
   ]}
 ];
 /* ---------- languages ---------- */
+const BUILD='2026-11-14 17:49';   /* set to the publish date and time by sync.ps1 */
 const DEFAULT_LANG='he';
 const I18N={
  en:{
@@ -957,7 +958,7 @@ function setTheme(t){document.documentElement.dataset.theme=t;$('themeBtn').setA
 $('themeBtn').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(t);try{localStorage.setItem('eliminate:theme',t)}catch(e){}};
 function applyLang(){
   const L=T();
-  $('credits').innerHTML=L.credits;
+  $('credits').innerHTML=L.credits+(BUILD!=='dev'?`<br><small>v${BUILD}</small>`:'');
   document.documentElement.lang=LANG; document.documentElement.dir=LANG==='he'?'rtl':'ltr';
   document.title=L.title;
   document.querySelectorAll('[data-t]').forEach(el=>{el.textContent=L[el.dataset.t]});
@@ -1214,7 +1215,7 @@ board.addEventListener('contextmenu',e=>{
 let cdrag=null, cdragEnded=0;
 function cdragStart(){
   const d=cdrag; d.on=true; d.el.classList.add('lifted'); document.body.classList.add('cdragging');
-  try{d.el.setPointerCapture(d.id)}catch(e){}
+  if(!d.touch)try{d.el.setPointerCapture(d.id)}catch(e){}
   if(d.touch&&navigator.vibrate)try{navigator.vibrate(15)}catch(e){}
 }
 function cdragEnd(commit){
@@ -1227,31 +1228,44 @@ function cdragEnd(commit){
   }
   renderClues();
 }
-$('side').addEventListener('pointerdown',e=>{
-  const el=e.target.closest('.well .clue');
-  if(!el||S.paused||cdrag||(e.pointerType==='mouse'&&e.button!==0)) return;
-  const touch=e.pointerType!=='mouse';
-  cdrag={el,id:e.pointerId,x:e.clientX,y:e.clientY,on:false,touch,
-    timer:touch?setTimeout(()=>{if(cdrag&&!cdrag.on)cdragStart()},350):0};
-});
-document.addEventListener('pointermove',e=>{
-  const d=cdrag; if(!d||e.pointerId!==d.id) return;
-  if(!d.on){
-    const far=Math.hypot(e.clientX-d.x,e.clientY-d.y)>(d.touch?10:6);
-    if(!far) return;
-    if(d.touch){cdragEnd(false);return}   /* moved before the hold: it's a scroll */
-    cdragStart();
-  }
-  e.preventDefault();
-  const hit=document.elementsFromPoint(e.clientX,e.clientY).find(x=>x!==d.el&&x.classList&&x.classList.contains('clue')&&x.parentNode===d.el.parentNode);
+function cdragOver(x,y){
+  const d=cdrag;
+  const hit=document.elementsFromPoint(x,y).find(n=>n!==d.el&&n.classList&&n.classList.contains('clue')&&n.parentNode===d.el.parentNode);
   if(!hit) return;
   const kids=[...d.el.parentNode.children];
   d.el.parentNode.insertBefore(d.el,kids.indexOf(d.el)<kids.indexOf(hit)?hit.nextSibling:hit);
+}
+/* mouse and pen: pointer events */
+$('side').addEventListener('pointerdown',e=>{
+  if(e.pointerType==='touch') return;
+  const el=e.target.closest('.well .clue');
+  if(!el||S.paused||cdrag||e.button!==0) return;
+  cdrag={el,id:e.pointerId,x:e.clientX,y:e.clientY,on:false,touch:false,timer:0};
+});
+document.addEventListener('pointermove',e=>{
+  const d=cdrag; if(!d||d.touch||e.pointerId!==d.id) return;
+  if(!d.on){ if(Math.hypot(e.clientX-d.x,e.clientY-d.y)<=6) return; cdragStart(); }
+  e.preventDefault(); cdragOver(e.clientX,e.clientY);
+});
+document.addEventListener('pointerup',e=>{if(cdrag&&!cdrag.touch&&e.pointerId===cdrag.id)cdragEnd(true)});
+document.addEventListener('pointercancel',e=>{if(cdrag&&!cdrag.touch&&e.pointerId===cdrag.id)cdragEnd(!!cdrag.on)});
+/* fingers: touch events, hold to pick up, a quick swipe still scrolls */
+$('side').addEventListener('touchstart',e=>{
+  const el=e.target.closest('.well .clue');
+  if(!el||S.paused||cdrag||e.touches.length!==1) return;
+  const t=e.touches[0];
+  cdrag={el,id:t.identifier,x:t.clientX,y:t.clientY,on:false,touch:true,
+    timer:setTimeout(()=>{if(cdrag&&!cdrag.on)cdragStart()},350)};
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  const d=cdrag; if(!d||!d.touch) return;
+  const t=[...e.changedTouches].find(x=>x.identifier===d.id); if(!t) return;
+  if(!d.on){ if(Math.hypot(t.clientX-d.x,t.clientY-d.y)>10) cdragEnd(false); return; }  /* moved before the hold: a scroll */
+  if(e.cancelable) e.preventDefault();       /* the clue is held: don't scroll the page */
+  cdragOver(t.clientX,t.clientY);
 },{passive:false});
-document.addEventListener('pointerup',e=>{if(cdrag&&e.pointerId===cdrag.id)cdragEnd(true)});
-document.addEventListener('pointercancel',e=>{if(cdrag&&e.pointerId===cdrag.id)cdragEnd(!!cdrag.on)});
-/* while a clue is held, stop the page from scrolling under the finger */
-document.addEventListener('touchmove',e=>{if(cdrag&&cdrag.on)e.preventDefault()},{passive:false});
+document.addEventListener('touchend',e=>{const d=cdrag;if(d&&d.touch&&[...e.changedTouches].some(x=>x.identifier===d.id)){if(d.on&&e.cancelable)e.preventDefault();cdragEnd(true)}},{passive:false});
+document.addEventListener('touchcancel',e=>{const d=cdrag;if(d&&d.touch)cdragEnd(!!d.on)});
 $('side').addEventListener('contextmenu',e=>{if(e.target.closest('.well .clue'))e.preventDefault()});
 $('side').addEventListener('click',e=>{
   const el=e.target.closest('.clue'); if(!el||!el.dataset.clue||S.paused) return;
@@ -1411,5 +1425,24 @@ try{ window.claude?.hot?.snapshot?.(()=>({S})); }catch(e){}
 try{
   window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 }catch(e){ start({}); }
+})();
+/* On the website: when the player comes back to the game (an app left open in the background,
+   an old browser tab), check for a newer version and reload into it. The game is saved first. */
+(function(){
+  if(!/^https?:$/.test(location.protocol)||!isTop||BUILD==='dev') return;
+  let last=0;
+  const check=()=>{
+    if(document.hidden||Date.now()-last<60000) return; last=Date.now();
+    fetch(location.pathname,{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{
+      const m=t.match(/const BUILD='([^']*)'/), nb=m&&m[1];
+      if(!nb||nb==='dev'||nb<=BUILD) return;
+      let tried='';try{tried=sessionStorage.getItem('logic:upd')||''}catch(e){}
+      if(tried===nb) return;                      /* never loop if the reload still gets the old copy */
+      try{sessionStorage.setItem('logic:upd',nb)}catch(e){}
+      if(S)save(); location.reload();
+    }).catch(()=>{});
+  };
+  document.addEventListener('visibilitychange',check);
+  setTimeout(check,3000);
 })();
 </script>
